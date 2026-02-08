@@ -1,12 +1,17 @@
 services:
-  ai:
-    build: ./ai-service
+  frontend:
+    build: ./frontend
     ports:
-      - "8001:8001"
+      - "8080:80"
+    depends_on:
+      - backend
 
   backend:
     build: ./backend
     ports:
       - "8000:8000"
-    depends_on:
-      - ai
+
+  ai:
+    build: ./ai-service
+    ports:
+      - "8001:8001"
