@@ -1,31 +1,26 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 
 app = FastAPI()
 
-# Health check
+# ✅ CORS FIX (THIS IS THE KEY)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   # allow all origins (dev only)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 def health_check():
     return {"status": "Backend is running"}
 
-# Request body model
-class ChatMessage(BaseModel):
-    message: str
-
-# Chat endpoint
 @app.post("/chat")
-def chat(chat: ChatMessage):
-    ai_service_url = "http://ai:8001/generate"
-
+def chat(payload: dict):
     response = requests.post(
-        ai_service_url,
-        json={"message": chat.message}
+        "http://ai:8001/generate",
+        json=payload
     )
-
-    ai_reply = response.json().get("reply")
-
-    return {
-        "user_message": chat.message,
-        "ai_reply": ai_reply
-    }
+    return response.json()
