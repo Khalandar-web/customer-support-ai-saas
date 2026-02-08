@@ -4,7 +4,14 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Khalandar-web/customer-support-ai-saas.git'
+                git branch: 'main',
+                    url: 'https://github.com/Khalandar-web/customer-support-ai-saas.git'
+            }
+        }
+
+        stage('Stop Existing Containers') {
+            steps {
+                sh 'docker-compose down || true'
             }
         }
 
