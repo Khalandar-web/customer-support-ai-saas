@@ -1,16 +1,22 @@
 async function sendMessage() {
   const message = document.getElementById("message").value;
 
-  const response = await fetch("http://backend:8000/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message })
-  });
+  try {
+    const response = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
+    document.getElementById("reply").innerText =
+      data.reply || JSON.stringify(data);
 
-  // 👇 MUST MATCH id="reply"
-  document.getElementById("reply").innerText = data.reply;
+  } catch (error) {
+    console.error(error);
+    document.getElementById("reply").innerText =
+      "❌ Cannot reach backend";
+  }
 }
