@@ -1,29 +1,32 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+import os
 
 app = FastAPI()
 
-# ✅ FINAL CORS CONFIG (frontend on 8080 allowed)
+# CORS (frontend access)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8080",
-        "http://127.0.0.1:8080"
-    ],
+    allow_origins=["*"],   # dev only
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Read API key from ENV
+AI_API_KEY = os.getenv("AI_API_KEY")
+
 @app.get("/")
 def health_check():
-    return {"status": "Backend is running"}
+    return {
+        "status": "Backend is running",
+        "api_key_loaded": AI_API_KEY is not None
+    }
 
 @app.post("/chat")
 def chat(payload: dict):
-    response = requests.post(
-        "http://ai:8001/generate",
-        json=payload
-    )
-    return response.json()
+    # TEMP response using ENV
+    return {
+        "reply": f"API key received ✅ ({AI_API_KEY}) | Message: {payload.get('message')}"
+    }
