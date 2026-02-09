@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        AI_API_KEY = credentials('AI_API_KEY')
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -11,29 +15,29 @@ pipeline {
 
         stage('Stop Existing Containers') {
             steps {
-                sh 'docker-compose down || true'
+                sh 'docker compose down || true'
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker-compose build'
+                sh 'docker compose build'
             }
         }
 
         stage('Run Containers') {
             steps {
-                sh 'docker-compose up -d'
+                sh 'AI_API_KEY=$AI_API_KEY docker compose up -d'
             }
         }
     }
 
     post {
         success {
-            echo '✅ CI/CD Pipeline completed successfully'
+            echo '✅ Deployment successful with secure secrets'
         }
         failure {
-            echo '❌ CI/CD Pipeline failed'
+            echo '❌ Deployment failed'
         }
     }
 }
