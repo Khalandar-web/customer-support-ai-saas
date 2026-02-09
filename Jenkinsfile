@@ -15,26 +15,26 @@ pipeline {
 
         stage('Stop Existing Containers') {
             steps {
-                sh 'docker compose down || true'
+                sh 'docker-compose down || true'
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker compose build'
+                sh 'docker-compose build'
             }
         }
 
         stage('Run Containers') {
             steps {
-                sh 'AI_API_KEY=$AI_API_KEY docker compose up -d'
+                sh 'AI_API_KEY=$AI_API_KEY docker-compose up -d'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Deployment successful with secure secrets'
+            echo '✅ Deployment successful with secure API key'
         }
         failure {
             echo '❌ Deployment failed'
