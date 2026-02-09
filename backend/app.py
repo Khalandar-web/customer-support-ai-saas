@@ -1,32 +1,39 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
-import os
 
 app = FastAPI()
 
-# CORS (frontend access)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # dev only
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Read API key from ENV
 AI_API_KEY = os.getenv("AI_API_KEY")
 
 @app.get("/")
-def health_check():
-    return {
-        "status": "Backend is running",
-        "api_key_loaded": AI_API_KEY is not None
-    }
+def health():
+    return {"status": "Backend running"}
 
 @app.post("/chat")
 def chat(payload: dict):
-    # TEMP response using ENV
+    message = payload.get("message")
+
+    # ❌ DO NOT PRINT OR RETURN API KEY
+    # print(AI_API_KEY)  <-- NEVER DO THIS
+
+    response = requests.post(
+        "http://ai:8001/generate",
+        json={
+            "message": message,
+            "api_key": AI_API_KEY
+        }
+    )
+
     return {
-        "reply": f"API key received ✅ ({AI_API_KEY}) | Message: {payload.get('message')}"
+        "reply": response.json().get("reply")
     }
