@@ -1,8 +1,3 @@
-import requests
-from fastapi import FastAPI
-
-app = FastAPI()
-
 @app.post("/generate")
 def generate(payload: dict):
     message = payload.get("message")
@@ -30,8 +25,11 @@ def generate(payload: dict):
         json=body
     )
 
+    print("STATUS:", response.status_code)
+    print("RESPONSE:", response.text)
+
     if response.status_code != 200:
-        return {"reply": "AI error occurred"}
+        return {"reply": response.text}
 
     ai_text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
